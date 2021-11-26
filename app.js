@@ -14,11 +14,30 @@ app.set('view engine', 'handlebars')
 const port = 3000
 
 //提取資料庫的內容 至js 中
-const restaurantList = require('./restaurant')
+const restaurantsList = require('./restaurant')
 
-//index 頁面網站架構
+//index 頁面路由架構
 app.get('/', (req, res) => {
-  res.render('index', { restaurantList: restaurantList.results })
+  res.render('index', { restaurantsList: restaurantsList.results })
+})
+
+//show 頁面路由架構
+app.get('/restaurants/:restaurant_id', (req, res) => {
+  const restaurant_id = req.params.restaurant_id
+  const restaurant = restaurantsList.results.find(restaurant => restaurant.id.toString() === restaurant_id)
+  res.render('show', { restaurant: restaurant })
+})
+
+//搜尋功能
+app.get('/search', (req, res) => {
+  const keyword = req.query.keyword
+  const restaurants = restaurantsList.results.filter(restaurant => {
+    return (restaurant.name.toLowerCase().includes(keyword.toLowerCase()) ||
+      restaurant.category.toLowerCase().includes(keyword.toLowerCase())
+    )
+  })
+  res.render('index', { restaurantsList: restaurants, keyword: keyword })
+
 })
 
 
